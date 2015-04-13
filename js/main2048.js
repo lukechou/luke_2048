@@ -4,12 +4,42 @@
  */
 
 var board = new Array();
-var score;
+var score,move;
 var hasCollisioned = new Array();
 
+var startx,starty,endx,endy;
+
 $(document).ready(function(){
+    prepareForMobile();
     newgame();
 });
+function prepareForMobile(){
+
+    if(documentWidth > 500){
+        gridContainerWidth = 500;
+        cellSideLength = 100;
+        cellSpace = 20;
+        $("h1").css("font-size","40px");
+    }
+    //consider the height of screen;
+    /*if(documentHeight > 600){
+        var headerHeight = $("header").outerHeight(true);
+        var gridContainerHeight = $("#grid-container").outerHeight(true);
+        alert(headerHeight+"___"+gridContainerHeight);
+        var m = (documentHeight - gridContainerHeight - headerHeight)/2;
+        $("header").css("margin-top",m + "px");
+    }*/
+
+    $("#grid-container").css("width",gridContainerWidth - 2 * cellSpace);
+    $("#grid-container").css("height",gridContainerWidth - 2 * cellSpace);
+    $("#grid-container").css("padding",cellSpace);
+    $("#grid-container").css("border-radius", 0.02 * gridContainerWidth);
+
+    $(".grid-cell").css("width",cellSideLength);
+    $(".grid-cell").css("height",cellSideLength);
+    $(".grid-cell").css("border-radius", 0.02 * cellSideLength);
+
+}
 
 function newgame(){
     //初始化棋盘格
@@ -21,6 +51,7 @@ function newgame(){
 
 function init(){
     score = 0;
+    move = 0;
     for( var i = 0 ; i < 4 ; i ++ ) {
         board[i] = new Array();
         hasCollisioned[i] = new Array();
@@ -46,12 +77,12 @@ function updateBoardView(){
             if(board[i][j] == 0){
                 theNumberCell.css("width","0px");
                 theNumberCell.css("height","0px");
-                theNumberCell.css("top",getPosTop(i,j) + 50+"px");
-                theNumberCell.css("left",getPosLeft(i,j) + 50+"px");
+                theNumberCell.css("top",getPosTop(i,j) + 0.5 * cellSideLength+"px");
+                theNumberCell.css("left",getPosLeft(i,j) + 0.5 * cellSideLength +"px");
 
             }else{
-                theNumberCell.css("width","100px");
-                theNumberCell.css("height","100px");
+                theNumberCell.css("width",cellSideLength);
+                theNumberCell.css("height",cellSideLength);
                 theNumberCell.css("top",getPosTop(i,j) );
                 theNumberCell.css("left",getPosLeft(i,j));
                 theNumberCell.css("background-color",getNumberBackgroundcolor(board[i][j]));
@@ -59,107 +90,35 @@ function updateBoardView(){
                 theNumberCell.text(board[i][j]);
                 //console.log(board[i][j]);
             }
-
+            $(".number-cell").css("line-height",cellSideLength+"px");
+            $(".number-cell").css("font-size",0.6 * cellSideLength +"px");
             hasCollisioned[i][j] = false;
         }
     }
 }
-function generatorOneNumber(moveDire){
+function generatorOneNumber(){
     if(noSpace(board)){
         return false;
     }
-    var randx,randy;
-
-    switch (moveDire){
-        case "left":
-            randx = parseInt(Math.floor(Math.random()*4));
-            randy = Math.random() < 0.5 ? 2 : 3;
-            var time = 0;
-            while(time < 30){
-                if(board[randx][randy] == 0)
-                    break;
-
-                randx = parseInt(Math.floor(Math.random()*4));
-                randy = Math.random() < 0.5 ? 2 : 3;
-                time ++;
+    /*
+    生成随机的坐标
+     */
+    var positionAvail = new Array();
+    var index = 0;
+    //先把值为0的格子统计出来，放数组里
+    for(var i = 0; i < 4; i ++){
+        for(var j = 0; j < 4; j ++){
+            if(board[i][j] == 0){
+                positionAvail[index] = i * 4 + j;
+                index ++;
             }
-            if(time == 30){
-                randx = generatorOneNumberByHand().x;
-                randy = generatorOneNumberByHand().y;
-            }
-            //console.log(moveDire);
-            break;
-        case "right":
-            randx = parseInt(Math.floor(Math.random()*4));
-            randy = Math.random() < 0.5 ? 0 : 1;
-            var time = 0;
-            while(time < 30){
-                if(board[randx][randy] == 0)
-                    break;
-
-                randx = parseInt(Math.floor(Math.random()*4));
-                randy = Math.random() < 0.5 ? 0 : 1;
-                time ++;
-            }
-            if(time == 30){
-                randx = generatorOneNumberByHand().x;
-                randy = generatorOneNumberByHand().y;
-            }
-            break;
-        case "up":
-            randx = Math.random() < 0.5 ? 2 : 3;
-            randy = parseInt(Math.floor(Math.random()*4));
-            var time = 0;
-            while(time < 30){
-                if(board[randx][randy] == 0)
-                    break;
-
-                randx = Math.random() < 0.5 ? 2 : 3;
-                randy = parseInt(Math.floor(Math.random()*4));
-                time ++;
-            }
-            if(time == 30){
-                randx = generatorOneNumberByHand().x;
-                randy = generatorOneNumberByHand().y;
-            }
-            //console.log(moveDire);
-            break;
-        case "down":
-            randx = Math.random() < 0.5 ? 0 : 1;
-            randy = parseInt(Math.floor(Math.random()*4));
-            var time = 0;
-            while(time < 30){
-                if(board[randx][randy] == 0)
-                    break;
-
-                randx = Math.random() < 0.5 ? 0 : 1;
-                randy = parseInt(Math.floor(Math.random()*4));
-                time ++;
-            }
-            if(time == 30){
-                randx = generatorOneNumberByHand().x;
-                randy = generatorOneNumberByHand().y;
-            }
-            break;
-        default :
-            //生成随机位置
-             randx = parseInt(Math.floor(Math.random()*4));
-             randy = parseInt(Math.floor(Math.random()*4));
-            var time = 0;
-            while(time < 30){
-                if(board[randx][randy] == 0)
-                    break;
-
-                 randx = parseInt(Math.floor(Math.random()*4));
-                 randy = parseInt(Math.floor(Math.random()*4));
-                time ++;
-            }
-            if(time == 30){
-                randx = generatorOneNumberByHand().x;
-                randy = generatorOneNumberByHand().y;
-            }
-            break;
+        }
     }
+    //再从数组中随机抽取一个元素
+    var randIndex = Math.floor(Math.random() * index);
+    var randx = Math.floor(positionAvail[randIndex]/4);
+    var randy = positionAvail[randIndex] % 4;
+
     //得到随机数
     var randnum = Math.random() < 0.5 ? 2 : 4;
 
@@ -170,41 +129,41 @@ function generatorOneNumber(moveDire){
     return true;
 }
 
-function generatorOneNumberByHand(){
-    var obj = {x:0,y:0};
-    for( var i = 0 ; i < 4 ; i ++ ) {
-        for (var j = 0; j < 4; j++) {
-            if(board[i][j] == 0){
-                obj.x = i;
-                obj.y = j;
-            }
-        }
-    }
-    return obj;
-}
 $(document).keydown(function(event){
     switch (event.keyCode){
         case 37: //left
+            event.preventDefault();
             if(moveLeft()){
-                setTimeout("generatorOneNumber('left')",210);
+                move ++;
+                updateMove(move);
+                setTimeout("generatorOneNumber()",210);
                 setTimeout("isGameOver()",300);
             }
             break;
         case 38: //up
+            event.preventDefault();
             if(moveUp()){
-                setTimeout("generatorOneNumber('up')",210);
+                move ++;
+                updateMove(move);
+                setTimeout("generatorOneNumber()",210);
                 setTimeout("isGameOver()",300);
             }
             break;
         case 39: //right
+            event.preventDefault();
             if(moveRight()){
-                setTimeout("generatorOneNumber('right')",210);
+                move ++;
+                updateMove(move);
+                setTimeout("generatorOneNumber()",210);
                 setTimeout("isGameOver()",300);
             }
             break;
         case 40: //down
+            event.preventDefault();
             if(moveDown()){
-                setTimeout("generatorOneNumber('down')",210);
+                move ++;
+                updateMove(move);
+                setTimeout("generatorOneNumber()",210);
                 setTimeout("isGameOver()",300);
             }
             break;
@@ -213,6 +172,65 @@ $(document).keydown(function(event){
     }
 });
 
+document.addEventListener("touchstart",function(event){
+    startx = event.touches[0].pageX;
+    starty = event.touches[0].pageY;
+});
+document.addEventListener("touchmove",function(event){
+    event.preventDefault();
+});
+
+document.addEventListener("touchend",function(event){
+    endx = event.changedTouches[0].pageX;
+    endy = event.changedTouches[0].pageY;
+
+    var deltax = endx - startx;
+    var deltay = endy - starty;
+
+    if(Math.abs(deltax) < 0.1 * gridContainerWidth && Math.abs(deltay) < 0.1 * gridContainerWidth){
+        return;
+    }
+
+    if(Math.abs(deltax) >= Math.abs(deltay)){
+        //x
+        if(deltax > 0){
+            //move right
+            if(moveRight()){
+                move ++;
+                updateMove(move);
+                setTimeout("generatorOneNumber('right')",210);
+                setTimeout("isGameOver()",300);
+            }
+        }else{
+            // move left
+            if(moveLeft()){
+                move ++;
+                updateMove(move);
+                setTimeout("generatorOneNumber('left')",210);
+                setTimeout("isGameOver()",300);
+            }
+        }
+    }else{
+        //y
+        if(deltay > 0){
+            // move down
+            if(moveDown()){
+                move ++;
+                updateMove(move);
+                setTimeout("generatorOneNumber('down')",210);
+                setTimeout("isGameOver()",300);
+            }
+        }else{
+            // move up
+            if(moveUp()){
+                move ++;
+                updateMove(move);
+                setTimeout("generatorOneNumber('up')",210);
+                setTimeout("isGameOver()",300);
+            }
+        }
+    }
+});
 function isGameOver(){
    if(noSpace(board) && !canMoveLeft(board) && !canMoveRight(board) && !canMoveUp(board) && !canMoveDown(board)){
        alert("Game is Over!! Game restart.");

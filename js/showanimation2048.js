@@ -11,8 +11,8 @@ function showNumberWithAnimation(x,y,num){
     numCell.text(num);
     numCell.animate(
         {
-            width: "100px",
-            height: "100px",
+            width: cellSideLength,
+            height: cellSideLength,
             top:getPosTop(x,y),
             left:getPosLeft(x,y)
         },50);
@@ -28,5 +28,10 @@ function showMoveAnimation(fromx,fromy,tox,toy){
 }
 
 function updateScore(score){
-    $("#score").text(score);
+    $("#score").text("score: "+ score);
 }
+
+function updateMove(move) {
+    $("#move").text("move: "+ move);
+}
+

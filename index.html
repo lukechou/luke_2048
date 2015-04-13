@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-
+    <meta name="viewport" content="width = device-width,height = device-height,initial-scale = 1.0,minimum-scale = 1.0,maximum-scale = 1.0,user-scalable = no">
     <link type="text/css" rel="stylesheet" href="css/2048.css">
 
     <script type="text/javascript" src="js/jquery-1.9.0.main.js"></script>
@@ -19,7 +19,8 @@
 <header>
     <h1>2048</h1>
     <a href="javascript:newgame();" id="newgamebutton">New Game</a>
-    <p>score : <span id="score">0</span></p>
+    <div class="play-data"><div id="score">score: 0</div><div id="move">move: 0</div></div>
+    <!--<p>score : <span id="score">0</span>&nbsp;&nbsp;<span id="move">0</span></p>-->
 </header>
 
 <div id="grid-container">
