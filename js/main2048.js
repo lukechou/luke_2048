@@ -19,7 +19,7 @@ function prepareForMobile(){
         gridContainerWidth = 500;
         cellSideLength = 100;
         cellSpace = 20;
-        $("h1").css("font-size","40px");
+        $("h1").css("font-size","28px");
     }
     //consider the height of screen;
     /*if(documentHeight > 600){
